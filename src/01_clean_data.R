@@ -7,13 +7,16 @@ FoT Liverpool Challenge
 
 > functionality:
   > for each play in Last Row Liverpool 2019 Tracking Data:
-      - label ball
       - standardize attack direction (to the right)
       
       - identify frames in which players make contact with the ball
       - label event frames
       
       - specify player roles (keeper, passer(s), shooter, off-ball)
+      
+      - rescale coordinates to pitch size (106m x 68m) 
+      
+      - TODO compute instantaneous velocities for each frame
     
       - write cleaned play data to .tsv
       
@@ -82,6 +85,7 @@ for (i in 1:nrow(all_plays)) {
   play_data <- standardize_play_direction(play_data)
   play_data <- generate_event_data(play_data)
   play_data <- specify_player_roles(play_data)
+  play_data <- rescale_coordinates(play_data)
   
   processed_play_file <- paste(
     data_clean_dir,
@@ -104,10 +108,10 @@ for (i in 1:nrow(all_plays)) {
 # library(ggforce)
 # 
 # shot_frame <- play_data[play_data$player_action == "shot", ]$frame
-# this_frame <- 175
+# this_frame <- 160
 # 
 # field_outline <- data.frame(x = c(0, 100, 100, 0),
-#                             y = c(0, 0, 100, 100))
+#                             y = c(0, 0, 68, 68))
 # 
 # shooter_view <- play_data %>%
 #   filter(frame == this_frame & player_role == "shooter") %>%
@@ -115,14 +119,26 @@ for (i in 1:nrow(all_plays)) {
 #   bind_rows(
 #     tibble(
 #       x = c(100, 100),
-#       y = c(50 - 11.6/2, 50 + 11.6/2),
+#       y = c(34 - 7.32/2, 34 + 7.32/2),
 #       player_role = rep("shooter", 2)
 #     )
 #   )
+# pitch_international <- list(
+#   length = 100,
+#   width = 68,
+#   penalty_box_length = 16.5,
+#   penalty_box_width = 40.32,
+#   six_yard_box_length = 5.5,
+#   six_yard_box_width = 18.32,
+#   penalty_spot_distance = 11,
+#   goal_width = 7.32,
+#   origin_x = 0,
+#   origin_y = 0
+# )
 # 
 # ggplot() +
 #   theme_minimal() +
-#   annotate_pitch(colour = "white", fill = "#7d967a") +
+#   annotate_pitch(colour = "white", fill = "#7d967a", dimensions = pitch_international) +
 #   # geom_voronoi_tile(
 #   #   data = play_data %>% filter(frame == this_frame & team != "ball"),
 #   #   aes(x = x, y = y, group = -1L, fill = team),
