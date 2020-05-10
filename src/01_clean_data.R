@@ -32,7 +32,7 @@ FoT Liverpool Challenge
 soccer_analytics_dir <- "~/proj/soccer_analytics"
 fotd_dir <- file.path(soccer_analytics_dir, "fotd")
 livc_dir <- file.path(fotd_dir, "liv_challenge")
-src_data_dir <- file.path(livc_dir, "src", "data")
+src_data_cleaning_dir <- file.path(livc_dir, "src", "data_cleaning")
 data_raw_dir <- file.path(
   soccer_analytics_dir, 
   "data",
@@ -51,8 +51,8 @@ setwd(soccer_analytics_dir)
 # dependencies ================================================================
 print("==== loading dependencies ====")
 library(dplyr)
-files.sources = list.files(src_data_dir)
-sapply(file.path(src_data_dir, files.sources), source)
+files.sources = list.files(src_data_cleaning_dir)
+sapply(file.path(src_data_cleaning_dir, files.sources), source)
 
 # data import =================================================================
 print("==== importing data ====")
@@ -86,6 +86,7 @@ for (i in 1:nrow(all_plays)) {
   play_data <- generate_event_data(play_data)
   play_data <- specify_player_roles(play_data)
   play_data <- rescale_coordinates(play_data)
+  play_data <- compute_velocities(play_data)
   
   processed_play_file <- paste(
     data_clean_dir,
